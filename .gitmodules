@@ -1,0 +1,6 @@
+[submodule "lib/system/vendor/Aura/Di"]
+	path = lib/system/vendor/Aura/Di
+	url = https://github.com/auraphp/Aura.Di.git
+[submodule "lib/system/vendor/Aura/Router"]
+	path = lib/system/vendor/Aura/Router
+	url = https://github.com/auraphp/Aura.Router.git
