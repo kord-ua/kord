@@ -2,21 +2,21 @@
 
 namespace KORD\Mvc;
 
-class Controller
+class Controller implements ControllerInterface
 {
     
     /**
-     * @var KORD\Mvc\RequestFactory
+     * @var KORD\Mvc\RequestFactoryInterface
      */
     protected $request_factory;
     
     /**
-     * @var KORD\Mvc\Request 
+     * @var KORD\Mvc\RequestInterface 
      */
     protected $request;
     
     /**
-     * @var KORD\Mvc\Response 
+     * @var KORD\Mvc\ResponseInterface 
      */
     protected $response;
     
@@ -25,7 +25,7 @@ class Controller
      */
     protected $arr;
 
-    public function __construct(Request $request, RequestFactory $request_factory, Response $response)
+    public function __construct(RequestInterface $request, RequestFactoryInterface $request_factory, ResponseInterface $response)
     {
         $this->request = $request;
         $this->request_factory = $request_factory;
@@ -45,7 +45,7 @@ class Controller
     /**
      * Execute request, return response
      * 
-     * @return KORD\Mvc\Response 
+     * @return KORD\Mvc\ResponseInterface 
      */
     public function execute()
     {
