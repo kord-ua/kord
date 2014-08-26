@@ -11,7 +11,11 @@ $app->params['KORD\Mvc\RequestFactory'] = [
 
 $app->params['KORD\Mvc\Controller'] = [
     'request_factory' => $app->lazyGet('request_factory'),
-    'response' => $app->lazyGet('response')
+    'response' => $app->lazyNew('KORD\Mvc\Response')
+];
+
+$app->params['KORD\Mvc\Response'] = [
+    'header' => $app->lazyNew('KORD\Mvc\Header')
 ];
 
 $app->params['KORD\Mvc\View'] = [
@@ -30,8 +34,6 @@ $app->set('profiler', $app->newInstance('KORD\Utils\Profiler'));
 $app->set('request_factory', $app->lazyNew('KORD\Mvc\RequestFactory'));
 
 $app->set('controller', $app->lazyNew('KORD\Mvc\Controller'));
-
-$app->set('response', $app->lazyNew('KORD\Mvc\Response'));
 
 $app->set('router', $router);
 
