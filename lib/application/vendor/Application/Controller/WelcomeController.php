@@ -9,6 +9,10 @@ class WelcomeController extends \KORD\Mvc\Controller
     {
         $testarr = ['foo' => 'barbaz'];
         
+        // test cookie
+        $this->cookie->set('test', 'coookie');
+        echo $this->cookie->get('test');
+        
         echo $this->request_factory->newInstance('/test')->execute()->getBody();
         
         $this->response->setHeader('Content-Type', 'text/html')->setStatus(200);

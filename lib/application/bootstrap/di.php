@@ -23,9 +23,20 @@ $app->params['KORD\Mvc\View'] = [
 ];
 
 $app->setter['KORD\Mvc\Controller']['setArr'] = $app->lazyGet('arr');
+$app->setter['KORD\Mvc\Controller']['setCookie'] = $app->lazyGet('cookie');
 
-// helpers
+/**
+ * HELPERS
+ */
+# Arr
 $app->set('arr', $app->lazyNew('KORD\Helper\Arr'));
+# Cookie
+$app->params['KORD\Helper\Cookie'] = [
+    'options' => [
+        'salt' => 'thisisatestsalt'
+    ]
+];
+$app->set('cookie', $app->lazyNew('KORD\Helper\Cookie'));
 
 // utilities
 $app->set('profiler', $app->newInstance('KORD\Utils\Profiler'));

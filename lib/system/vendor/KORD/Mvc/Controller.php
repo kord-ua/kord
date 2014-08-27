@@ -24,6 +24,11 @@ class Controller implements ControllerInterface
      * @var KORD\Helper\ArrInterface
      */
     protected $arr;
+    
+    /**
+     * @var KORD\Helper\CookieInterface
+     */
+    protected $cookie;
 
     public function __construct(RequestInterface $request, RequestFactoryInterface $request_factory, ResponseInterface $response)
     {
@@ -33,13 +38,23 @@ class Controller implements ControllerInterface
     }
     
     /**
-     * Test helper injection
+     * Arr helper injection
      * 
      * @param \KORD\Helper\ArrInterface $arr
      */
     public function setArr(\KORD\Helper\ArrInterface $arr)
     {
         $this->arr = $arr;
+    }
+    
+    /**
+     * Cookie helper injection
+     * 
+     * @param \KORD\Helper\CookieInterface $cookie
+     */
+    public function setCookie(\KORD\Helper\CookieInterface $cookie)
+    {
+        $this->cookie = $cookie;
     }
     
     /**
