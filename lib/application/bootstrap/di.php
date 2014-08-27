@@ -15,7 +15,8 @@ $app->params['KORD\Mvc\Controller'] = [
 ];
 
 $app->params['KORD\Mvc\Response'] = [
-    'header' => $app->lazyNew('KORD\Mvc\Header')
+    'header' => $app->lazyNew('KORD\Mvc\Header'),
+    'cookie' => $app->lazyGet('cookie')
 ];
 
 $app->params['KORD\Mvc\View'] = [

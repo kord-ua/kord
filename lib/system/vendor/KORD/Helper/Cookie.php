@@ -46,7 +46,7 @@ class Cookie implements CookieInterface
      * 
      * @param array $options
      */
-    public function __construct($options)
+    public function __construct(array $options = [])
     {
         if (isset($options['salt'])) {
             $this->setSalt($options['salt']);

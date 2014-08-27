@@ -15,7 +15,7 @@ class WelcomeController extends \KORD\Mvc\Controller
         
         echo $this->request_factory->newInstance('/test')->execute()->getBody();
         
-        $this->response->setHeader('Content-Type', 'text/html')->setStatus(200);
+        $this->response->setHeader('Content-Type', 'text/html')->setStatus(404);
         $this->response->setBody($this->arr->get($testarr, 'foo'));
     }
 

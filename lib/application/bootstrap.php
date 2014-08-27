@@ -97,6 +97,6 @@ foreach ($paths as $appr) {
     }
 }
 
-echo $app->get('request_factory')->newInstance()->execute()->getBody();
+echo $app->get('request_factory')->newInstance()->execute()->sendHeaders()->getBody();
 
 echo $app->get('view')->set(['filesystem' => $filesystem, 'profiler' => $app->get('profiler')])->render('profiler/stats');

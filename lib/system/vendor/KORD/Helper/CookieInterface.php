@@ -12,6 +12,96 @@ interface CookieInterface
 {
 
     /**
+     * Set cookie salt
+     * 
+     * @param string $salt
+     * @return \KORD\Helper\CookieInterface
+     */
+    public function setSalt($salt);
+    
+    /**
+     * Get cookie salt
+     * 
+     * @return string
+     */
+    public function getSalt();
+    
+    /**
+     * Set cookie expiration time in seconds
+     * 
+     * @param int $seconds
+     * @return \KORD\Helper\CookieInterface
+     */
+    public function setExpiration($seconds);
+    
+    /**
+     * Get cookie expiration time in seconds
+     * 
+     * @return int
+     */
+    public function getExpiration();
+    
+    /**
+     * Set cookie restriction path
+     * 
+     * @param string $path
+     * @return \KORD\Helper\CookieInterface
+     */
+    public function setPath($path);
+    
+    /**
+     * Get cookie restriction path
+     * 
+     * @return string
+     */
+    public function getPath();
+    
+    /**
+     * Set cookie restriction domain
+     * 
+     * @param string $domain
+     * @return \KORD\Helper\CookieInterface
+     */
+    public function setDomain($domain);
+    
+    /**
+     * Get cookie restriction domain
+     * 
+     * @return string
+     */
+    public function getDomain();
+    
+    /**
+     * Set if cookie should be transmitted only over secure connections
+     * 
+     * @param bool $flag
+     * @return \KORD\Helper\CookieInterface
+     */
+    public function setSecure($flag);
+    
+    /**
+     * Get cookie secure option
+     * 
+     * @return bool
+     */
+    public function getSecure();
+    
+    /**
+     * Set if cookie should be transmitted only over HTTP, disabling Javascript access
+     * 
+     * @param bool $flag
+     * @return \KORD\Helper\CookieInterface
+     */
+    public function setHttponly($flag);
+    
+    /**
+     * Get cookie httponly option
+     * 
+     * @return bool
+     */
+    public function getHttponly();
+    
+    /**
      * Gets the value of a signed cookie. Cookies without signatures will not
      * be returned. If the cookie signature is present, but invalid, the cookie
      * will be deleted.
