@@ -2,9 +2,9 @@
 
 namespace KORD\Mvc;
 
+use KORD\Filesystem\FileSystemInterface;
+use KORD\Mvc\ViewInterface;
 use KORD\Exception;
-//use KORD\Statical\FileSystemProxy as FileSystem;
-//use KORD\Statical\ViewGlobalProxy as ViewGlobal;
 
 /**
  * Acts as an object wrapper for HTML pages with embedded PHP, called "views".
@@ -14,74 +14,28 @@ use KORD\Exception;
  * @copyright  (c) 2007–2014 Kohana Team
  * @copyright  (c) 2014 Andriy Strepetov
  */
-class View
+class View implements ViewInterface
 {
     
+    /**
+     * @var \KORD\Filesystem\FileSystemInterface
+     */
     protected $filesystem;
 
     /**
-     * Captures the output that is generated when a view is included.
-     * The view data will be extracted to make local variables. This method
-     * is static to prevent object scope resolution.
-     *
-     *     $output = View::capture($file, $data);
-     *
-     * @param   string  $view_filename   filename
-     * @param   array   $view_data       variables
-     * @return  string
+     * @var \KORD\Filesystem\ViewInterface
      */
-    protected static function capture($view_filename, array $view_data)
-    {
-        // Import the view variables to local namespace
-        extract($view_data, EXTR_SKIP);
-
-        /*if ($global_data = ViewGlobal::get()) {
-            // Import the global view variables to local namespace
-            extract($global_data, EXTR_SKIP | EXTR_REFS);
-        }*/
-
-        // Capture the view output
-        ob_start();
-
-        try {
-            // Load the view within the current scope
-            include $view_filename;
-        } catch (\Exception $e) {
-            // Delete the output buffer
-            ob_end_clean();
-
-            // Re-throw the exception
-            throw $e;
-        }
-
-        // Get the captured output and close the buffer
-        return ob_get_clean();
-    }
-
-    /**
-     * Sets a global variable, similar to [View::set], except that the
-     * variable will be accessible to all views.
-     *
-     *     View::setGlobal($name, $value);
-     *
-     * @param   string  $key    variable name or an array of variables
-     * @param   mixed   $value  value
-     * @return  void
-     */
-    public static function setGlobal($key, $value = null)
-    {
-        ViewGlobal::set($key, $value);
-    }
-
-    // View filename
-    protected $file;
-    // Array of local variables
-    protected $data = [];
+    protected $view_global;
     
-    public function __construct($filesystem)
-    {
-        $this->filesystem = $filesystem;
-    }
+    /**
+     * @var string  View filename
+     */
+    protected $file;
+    
+    /**
+     * @var array  Array of local variables
+     */
+    protected $data = [];
 
     /**
      * Sets the initial view filename and local data. Views should almost
@@ -94,8 +48,11 @@ class View
      * @return  void
      * @uses    \KORD\Mvc\View::setFilename
      */
-    /*public function __construct($file = null, array $data = null)
+    public function __construct(FileSystemInterface $filesystem, ViewInterface $view_global = null, $file = null, array $data = null)
     {
+        $this->filesystem = $filesystem;
+        $this->view_global = $view_global;
+
         if ($file !== null) {
             $this->setFilename($file);
         }
@@ -104,7 +61,7 @@ class View
             // Add the values to the current data
             $this->data = $data + $this->data;
         }
-    }*/
+    }
 
     /**
      * Magic method, searches for the given variable and returns its value.
@@ -122,8 +79,8 @@ class View
     {
         if (array_key_exists($key, $this->data)) {
             return $this->data[$key];
-        } elseif ($global_data = ViewGlobal::get() AND array_key_exists($key, $global_data)) {
-            return View::$global_data[$key];
+        } elseif ($global_data = $this->view_global->get() AND array_key_exists($key, $global_data)) {
+            return $global_data[$key];
         } else {
             throw new \RuntimeException("View variable is not set: $key");
         }
@@ -155,7 +112,7 @@ class View
      */
     public function __isset($key)
     {
-        return (isset($this->data[$key]) OR ($global_data = ViewGlobal::get() AND isset($global_data[$key])));
+        return (isset($this->data[$key]) OR ($global_data = $this->view_global->get() AND isset($global_data[$key])));
     }
 
     /**
@@ -168,7 +125,7 @@ class View
      */
     public function __unset($key)
     {
-        unset($this->data[$key]);
+        unset($this->data[$key], $this->view_global->$key);
     }
 
     /**
@@ -229,7 +186,7 @@ class View
      *
      * @param   string  $key    variable name or an array of variables
      * @param   mixed   $value  value
-     * @return  $this
+     * @return  \KORD\Mvc\ViewInterface
      */
     public function set($key, $value = null)
     {
@@ -271,7 +228,7 @@ class View
      *
      * @param   string  $key    variable name
      * @param   mixed   $value  referenced variable
-     * @return  $this
+     * @return  \KORD\Mvc\ViewInterface
      */
     public function bind($key, & $value)
     {
@@ -292,7 +249,7 @@ class View
      * @param   string  $file   view filename
      * @return  string
      * @throws  \InvalidArgumentException
-     * @uses    \KORD\View::capture
+     * @uses    \KORD\Mvc\View::capture
      */
     public function render($file = null)
     {
@@ -306,6 +263,45 @@ class View
 
         // Combine local and global data and capture the output
         return View::capture($this->file, $this->data);
+    }
+    
+    /**
+     * Captures the output that is generated when a view is included.
+     * The view data will be extracted to make local variables. This method
+     * is static to prevent object scope resolution.
+     *
+     *     $output = $view->capture($file, $data);
+     *
+     * @param   string  $view_filename   filename
+     * @param   array   $view_data       variables
+     * @return  string
+     */
+    public function capture($view_filename, array $view_data)
+    {
+        // Import the view variables to local namespace
+        extract($view_data, EXTR_SKIP);
+
+        if ($global_data = $this->view_global->get()) {
+            // Import the global view variables to local namespace
+            extract($global_data, EXTR_SKIP | EXTR_REFS);
+        }
+
+        // Capture the view output
+        ob_start();
+
+        try {
+            // Load the view within the current scope
+            include $view_filename;
+        } catch (\Exception $e) {
+            // Delete the output buffer
+            ob_end_clean();
+
+            // Re-throw the exception
+            throw $e;
+        }
+
+        // Get the captured output and close the buffer
+        return ob_get_clean();
     }
 
 }

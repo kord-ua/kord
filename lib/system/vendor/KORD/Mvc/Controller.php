@@ -21,6 +21,16 @@ class Controller implements ControllerInterface
     protected $response;
     
     /**
+     * @var KORD\Mvc\ViewFactoryInterface
+     */
+    protected $view_factory;
+    
+    /**
+     * @var KORD\Mvc\ViewInterface
+     */
+    protected $view_global;
+    
+    /**
      * @var KORD\Helper\ArrInterface
      */
     protected $arr;
@@ -55,6 +65,26 @@ class Controller implements ControllerInterface
     public function setCookie(\KORD\Helper\CookieInterface $cookie)
     {
         $this->cookie = $cookie;
+    }
+    
+    /**
+     * View factory injection
+     * 
+     * @param \KORD\Mvc\ViewFactoryInterface $view_factory
+     */
+    public function setViewFactory(\KORD\Mvc\ViewFactoryInterface $view_factory)
+    {
+        $this->view_factory = $view_factory;
+    }
+    
+    /**
+     * Global view injection
+     * 
+     * @param \KORD\Mvc\ViewInterface $view_global
+     */
+    public function setViewGlobal(\KORD\Mvc\ViewInterface $view_global)
+    {
+        $this->view_global = $view_global;
     }
     
     /**

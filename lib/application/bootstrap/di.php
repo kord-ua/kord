@@ -19,12 +19,19 @@ $app->params['KORD\Mvc\Response'] = [
     'cookie' => $app->lazyGet('cookie')
 ];
 
+$app->params['KORD\Mvc\ViewFactory'] = [
+    'closure' => $app->newFactory('KORD\Mvc\View')
+];
+
 $app->params['KORD\Mvc\View'] = [
-    'filesystem' => $filesystem
+    'filesystem' => $filesystem,
+    'view_global' => $app->lazyGet('view_global')
 ];
 
 $app->setter['KORD\Mvc\Controller']['setArr'] = $app->lazyGet('arr');
 $app->setter['KORD\Mvc\Controller']['setCookie'] = $app->lazyGet('cookie');
+$app->setter['KORD\Mvc\Controller']['setViewFactory'] = $app->lazyGet('view_factory');
+$app->setter['KORD\Mvc\Controller']['setViewGlobal'] = $app->lazyGet('view_global');
 
 /**
  * HELPERS
@@ -49,4 +56,5 @@ $app->set('controller', $app->lazyNew('KORD\Mvc\Controller'));
 
 $app->set('router', $router);
 
-$app->set('view', $app->lazyNew('KORD\Mvc\View'));
+$app->set('view_factory', $app->lazyNew('KORD\Mvc\ViewFactory'));
+$app->set('view_global', $app->lazyNew('KORD\Mvc\View', ['view_global' => null]));
