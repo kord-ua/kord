@@ -88,6 +88,9 @@ require_once $filesystem->findFile('bootstrap', 'routes');
 // init Di
 require_once $filesystem->findFile('bootstrap', 'di');
 
+// Enable KORD exception handling, adds stack traces and error source.
+set_exception_handler([$app->get('exception'), 'handler']);
+
 /**
  * Init modules
  */

@@ -314,5 +314,21 @@ class Cascade implements FileSystemInterface
     {
         return include $file;
     }
+    
+    /**
+     * Writes content to a file
+     * 
+     *      $foo = $filesystem->save('foo.php');
+     * 
+     * @param string $file
+     * @param string $contents
+     */
+    public function save($file, $contents)
+    {
+        $contents = FILE_SECURITY . PHP_EOL . PHP_EOL . $contents;
+        $result = file_put_contents($file, $contents);
+        chmod($file, 0666);
+        return ($result !== false);
+    }
 
 }

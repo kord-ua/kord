@@ -88,6 +88,16 @@ class Response implements ResponseInterface
      * @var  string      The response protocol
      */
     protected $protocol = 'HTTP/1.1';
+    
+    /**
+     * @var string  default Response charset
+     */
+    protected $charset = 'utf-8';
+    
+    /**
+     * @var string  default Response content type
+     */
+    protected $content_type = 'text/html';
 
     /**
      * Construct new response
@@ -357,13 +367,9 @@ class Response implements ResponseInterface
 
             $processed_headers[] = implode('-', array_map('ucfirst', explode('-', $header))) . ': ' . $value;
         }
-
-        // TODO: use global container
-        $content_type = 'text/html';
-        $charset = 'utf-8';
         
         if (!isset($headers['content-type'])) {
-            $processed_headers[] = 'Content-Type: ' . $content_type . '; charset=' . $charset;
+            $processed_headers[] = 'Content-Type: ' . $this->content_type . '; charset=' . $this->charset;
         }
 
         /*if (Core::$expose AND ! isset($headers['x-powered-by'])) {

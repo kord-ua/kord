@@ -39,6 +39,11 @@ class Controller implements ControllerInterface
      * @var KORD\Helper\CookieInterface
      */
     protected $cookie;
+    
+    /**
+     * @var KORD\Helper\UTF8Interface 
+     */
+    protected $utf8;
 
     public function __construct(RequestInterface $request, RequestFactoryInterface $request_factory, ResponseInterface $response)
     {
@@ -65,6 +70,16 @@ class Controller implements ControllerInterface
     public function setCookie(\KORD\Helper\CookieInterface $cookie)
     {
         $this->cookie = $cookie;
+    }
+    
+    /**
+     * Cookie helper injection
+     * 
+     * @param \KORD\Helper\UTF8Interface $cookie
+     */
+    public function setUtf8(\KORD\Helper\UTF8Interface $utf8)
+    {
+        $this->utf8 = $utf8;
     }
     
     /**

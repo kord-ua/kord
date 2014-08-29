@@ -1,0 +1,27 @@
+<?php
+
+namespace KORD\Config;
+
+/**
+ * Interface for config writers
+ *
+ * Specifies the methods that a config writer must implement
+ * 
+ * @copyright  (c) 2007–2014 Kohana Team
+ * @copyright  (c) 2014 Andriy Strepetov
+ */
+interface WriterInterface extends SourceInterface
+{
+
+    /**
+     * Writes the passed config for $group
+     *
+     * Returns chainable instance on success or throws
+     * Exception on failure
+     *
+     * @param string      $group  The config group
+     * @param array       $config The configuration to write
+     * @return bool
+     */
+    public function write($group, $config);
+}

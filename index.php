@@ -12,6 +12,11 @@ define('EXT', '.php');
 define('DOCROOT', realpath(__DIR__) . DIRECTORY_SEPARATOR);
 
 /**
+ * Security check that is added to all generated PHP files
+ */
+define('FILE_SECURITY', '<?php defined(\'DOCROOT\') OR die(\'No direct script access.\');');
+
+/**
  * Set the PHP error reporting level. If you set this in php.ini, you remove this.
  * @link http://www.php.net/manual/errorfunc.configuration#ini.error-reporting
  *

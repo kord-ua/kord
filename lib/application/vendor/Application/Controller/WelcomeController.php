@@ -7,6 +7,7 @@ class WelcomeController extends \KORD\Mvc\Controller
     
     public function indexAction()
     {
+        //throw new \Exception('test', 404);
         $testarr = ['foo' => 'barbaz'];
         
         // test cookie

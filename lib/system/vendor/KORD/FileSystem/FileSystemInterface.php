@@ -77,5 +77,15 @@ interface FileSystemInterface
      * @return  mixed
      */
     public function load($file);
+    
+    /**
+     * Writes content to a file
+     * 
+     *      $foo = $filesystem->save('foo.php');
+     * 
+     * @param string $file
+     * @param string $contents
+     */
+    public function save($file, $contents);
 
 }
