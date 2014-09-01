@@ -14,6 +14,8 @@ class WelcomeController extends \KORD\Mvc\Controller
         $this->cookie->set('test', 'coookie');
         echo $this->cookie->get('test');
         
+        echo $this->i18n->translate(':count files', 10, [':count' => 10]);
+        
         // test sub-request
         echo $this->request_factory->newInstance('/test')->execute()->getBody();
         

@@ -8,10 +8,14 @@ defined('DOCROOT') or die('No direct script access.');
 $cookie_salt = 'thisisatestsalt';
 
 // -- Setup HELPERS  -----------------------------------------------------------
-# Arr
+/**
+ * Arr
+ */
 $app->set('arr', $app->lazyNew('KORD\Helper\Arr'));
 
-# Cookie
+/**
+ * Cookie
+ */
 $app->params['KORD\Helper\Cookie'] = [
     'options' => [
         'salt' => $cookie_salt
@@ -19,28 +23,47 @@ $app->params['KORD\Helper\Cookie'] = [
 ];
 $app->set('cookie', $app->lazyNew('KORD\Helper\Cookie'));
 
-# UTF8
+/**
+ * Date
+ */
+$app->params['KORD\I18n\Date\Format'] = [
+    'i18n' => $app->lazyGet('i18n')
+];
+$app->params['KORD\Helper\Date'] = [
+    'date_format_closure' => $app->newFactory('KORD\I18n\Date\Format'),
+    'i18n' => $app->lazyGet('i18n')
+];
+$app->set('cookie', $app->lazyNew('KORD\Helper\Cookie'));
+
+/**
+ * UTF8
+ */
 $app->params['KORD\Helper\UTF8'] = [
     'filesystem' => $filesystem
 ];
 $app->set('utf8', $app->lazyNew('KORD\Helper\UTF8'));
 
 // -- Setup CONFIG  ------------------------------------------------------------
+/**
+ * Repository
+ */
 $app->params['KORD\Config\Repository'] = [
     'group_closure' => $app->newFactory('KORD\Config\Group'),
-    'arr' => $app->lazyGet('arr')
+    'arr' => $app->lazyGet('arr'),
+    'sources' => [
+        $app->lazyGet('config_reader')
+    ]
 ];
+$app->set('config', $app->lazyNew('KORD\Config\Repository'));
 
+/**
+ * Reader
+ */
 $app->params['KORD\Config\File\Reader'] = [
     'filesystem' => $filesystem,
     'arr' => $app->lazyGet('arr')
 ];
-
-$app->set('config', $app->lazyNew('KORD\Config\Repository'));
 $app->set('config_reader', $app->lazyNew('KORD\Config\File\Reader'));
-
-// attach config reader
-$app->get('config')->attach($app->get('config_reader'));
 
 // -- Setup Handlers  ----------------------------------------------------------
 /**
@@ -63,30 +86,70 @@ $app->params['KORD\Error\Debug'] = [
 ];
 $app->set('debug', $app->lazyNew('KORD\Error\Debug'));
 
+// -- Setup I18n  --------------------------------------------------------------
+/**
+ * Repository
+ */
+$app->params['KORD\I18n\Repository'] = [
+    'readers' => [
+        $app->lazyGet('i18n_reader')
+    ],
+    'lang' => 'ru'
+];
+$app->set('i18n', $app->lazyNew('KORD\I18n\Repository'));
+
+/**
+ * Reader
+ */
+$app->params['KORD\I18n\Reader\File'] = [
+    'arr' => $app->lazyGet('arr'),
+    'filesystem' => $filesystem
+];
+$app->set('i18n_reader', $app->lazyNew('KORD\I18n\Reader\File'));
+
 // -- Setup MVC  ---------------------------------------------------------------
 /**
  * Request Factory
  */
 $app->params['KORD\Mvc\RequestFactory'] = [
     'router'    => $app->lazyGet('router'),
-    'closure'   => $app->newFactory('KORD\Mvc\Request')
+    'closure'   => $app->newFactory('KORD\Mvc\Request'),
+    'clients' => [
+        'internal' => $app->newFactory('KORD\Mvc\Request\Client\Internal'),
+        'curl' => $app->newFactory('KORD\Mvc\Request\Client\Curl')
+    ]
 ];
 $app->set('request_factory', $app->lazyNew('KORD\Mvc\RequestFactory'));
 
 /**
+ * Request client
+ */
+$app->params['KORD\Mvc\Request\ClientAbstract'] = [
+    'response_factory' => $app->lazyGet('response_factory')
+];
+$app->setter['KORD\Mvc\Request\ClientAbstract']['setProfiler'] = $app->lazyGet('profiler');
+
+/**
  * Controller
  */
-$app->params['KORD\Mvc\Controller'] = [
-    'request_factory'   => $app->lazyGet('request_factory'),
-    'response'          => $app->lazyNew('KORD\Mvc\Response')
+$app->setter['KORD\Mvc\Controller'] = [
+    'setArr' => $app->lazyGet('arr'),
+    'setCookie' => $app->lazyGet('cookie'),
+    'setI18n' => $app->lazyGet('i18n'),
+    'setRequestFactory' => $app->lazyGet('request_factory'),
+    'setUtf8' => $app->lazyGet('utf8'),
+    'setViewFactory' => $app->lazyGet('view_factory'),
+    'setViewGlobal' => $app->lazyGet('view_global')
 ];
-$app->setter['KORD\Mvc\Controller']['setArr'] = $app->lazyGet('arr');
-$app->setter['KORD\Mvc\Controller']['setCookie'] = $app->lazyGet('cookie');
-$app->setter['KORD\Mvc\Controller']['setUtf8'] = $app->lazyGet('utf8');
-$app->setter['KORD\Mvc\Controller']['setViewFactory'] = $app->lazyGet('view_factory');
-$app->setter['KORD\Mvc\Controller']['setViewGlobal'] = $app->lazyGet('view_global');
-
 $app->set('controller', $app->lazyNew('KORD\Mvc\Controller'));
+
+/**
+ * Response factory
+ */
+$app->params['KORD\Mvc\ResponseFactory'] = [
+    'closure'   => $app->newFactory('KORD\Mvc\Response')
+];
+$app->set('response_factory', $app->lazyNew('KORD\Mvc\ResponseFactory'));
 
 /**
  * Response

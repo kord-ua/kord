@@ -6,13 +6,13 @@ namespace KORD\Utils;
  * Provides simple benchmarking and profiling. To display the statistics that
  * have been collected, load the `profiler/stats` [View]:
  *
- *     echo \KORD\Mvc\View::factory('profiler/stats');
+ *     echo $view->render('profiler/stats');
  * 
  * @copyright  (c) 2007–2014 Kohana Team
  * @copyright  (c) 2014 Andriy Strepetov
  * @todo Caching marks in $profiler->application()
  */
-class Profiler
+class Profiler implements ProfilerInterface
 {
 
     /**

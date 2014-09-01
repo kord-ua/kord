@@ -52,5 +52,3 @@ if (!defined('START_MEMORY')) {
 
 // Bootstrap the application
 require 'lib/application/bootstrap' . EXT;
-
-//echo (new \KORD\Mvc\View('profiler/stats'));

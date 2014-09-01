@@ -41,14 +41,18 @@ class Controller implements ControllerInterface
     protected $cookie;
     
     /**
+     * @var KORD\I18n\RepositoryInterface 
+     */
+    protected $i18n;
+    
+    /**
      * @var KORD\Helper\UTF8Interface 
      */
     protected $utf8;
 
-    public function __construct(RequestInterface $request, RequestFactoryInterface $request_factory, ResponseInterface $response)
+    public function __construct(RequestInterface $request, ResponseInterface $response)
     {
         $this->request = $request;
-        $this->request_factory = $request_factory;
         $this->response = $response;
     }
     
@@ -75,7 +79,27 @@ class Controller implements ControllerInterface
     /**
      * Cookie helper injection
      * 
-     * @param \KORD\Helper\UTF8Interface $cookie
+     * @param \KORD\I18n\RepositoryInterface $i18n
+     */
+    public function setI18n(\KORD\I18n\RepositoryInterface $i18n)
+    {
+        $this->i18n = $i18n;
+    }
+    
+    /**
+     * Request factory injection
+     * 
+     * @param \KORD\Mvc\RequestFactoryInterface $request_factory
+     */
+    public function setRequestFactory(RequestFactoryInterface $request_factory)
+    {
+        $this->request_factory = $request_factory;
+    }
+    
+    /**
+     * UTF8 helper injection
+     * 
+     * @param \KORD\Helper\UTF8Interface $utf8
      */
     public function setUtf8(\KORD\Helper\UTF8Interface $utf8)
     {

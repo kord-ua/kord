@@ -2,8 +2,16 @@
 
 namespace KORD\Mvc;
 
+use KORD\Mvc\Request\ClientInterface;
+
 class Request implements RequestInterface
 {
+    
+    /**
+     *
+     * @var \KORD\Mvc\Request\ClientInterface
+     */
+    protected $client;
 
     /**
      * @var string 
@@ -23,9 +31,9 @@ class Request implements RequestInterface
     /**
      * Construct new request
      */
-    public function __construct()
+    public function __construct(ClientInterface $client)
     {
-        //
+        $this->client = $client;
     }
     
     /**
@@ -67,6 +75,26 @@ class Request implements RequestInterface
     {
         return $this->action;
     }
+    
+    /**
+     * Set request uri
+     * 
+     * @param string $uri
+     */
+    public function setUri($uri)
+    {
+       $this->uri = $uri;
+    }
+
+    /**
+     * Get request uri
+     * 
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
 
     /**
      * Execute request
@@ -75,8 +103,7 @@ class Request implements RequestInterface
      */
     public function execute()
     {
-        $controller = $this->getController();
-        return $controller($this)->execute();
+        return $this->client->execute($this);
     }
 
 }

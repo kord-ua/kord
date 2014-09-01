@@ -24,17 +24,17 @@ class Repository implements RepositoryInterface
      * @var array  Configuration readers
      */
     protected $sources = [];
-    
+
     /**
      * @var array  Array of config groups
      */
     protected $groups = [];
-    
+
     /**
      * @var \KORD\Helper\ArrInterface  Array helper
      */
     protected $arr;
-    
+
     /**
      * @var object  Config group construction closure
      */
@@ -43,12 +43,19 @@ class Repository implements RepositoryInterface
     /**
      * Construct new Config repository
      * 
-     * @param \KORD\Helper\ArrInterface $arr
+     * @param object $group_closure           Config group construction closure
+     * @param \KORD\Helper\ArrInterface $arr  array helper
+     * @param array $sources                  array of Configuration readers
      */
-    public function __construct($group_closure, ArrInterface $arr)
+    public function __construct($group_closure, ArrInterface $arr, array $sources = null)
     {
         $this->group_closure = $group_closure;
         $this->arr = $arr;
+        if (!empty($sources)) {
+            foreach ($sources as $source) {
+                $this->attach($source());
+            }
+        }
     }
 
     /**
@@ -171,7 +178,7 @@ class Repository implements RepositoryInterface
     {
         // Load the configuration group
         $config = $this->load($group);
-        
+
         $this->write($group, $config->asArray());
 
         return $this;

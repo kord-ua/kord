@@ -10,7 +10,7 @@ $router->add('home', '')
             'action' => 'index',
         ]);
 
-$router->add('test', '/test')
+$router->add('test', 'test')
         ->addValues([
             'controller' => $app->newFactory('Application\Controller\SubController'),
             'action' => 'index',

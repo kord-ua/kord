@@ -32,6 +32,20 @@ interface RequestInterface
      * @return string
      */
     public function getAction();
+    
+    /**
+     * Set request uri
+     * 
+     * @param string $uri
+     */
+    public function setUri($uri);
+
+    /**
+     * Get request uri
+     * 
+     * @return string
+     */
+    public function getUri();
 
     /**
      * Execute request
