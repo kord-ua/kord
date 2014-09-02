@@ -36,15 +36,45 @@ class Controller implements ControllerInterface
     protected $arr;
     
     /**
+     * @var KORD\Config\RepositoryInterface 
+     */
+    protected $config;
+
+    /**
      * @var KORD\Helper\CookieInterface
      */
     protected $cookie;
     
     /**
+     * @var KORD\Helper\DateInterface 
+     */
+    protected $date;
+
+    /**
+     * @var KORD\Crypt\EncryptInterface
+     */
+    protected $encrypt;
+
+    /**
+     * @var KORD\Crypt\HashInterface
+     */
+    protected $hash;
+
+    /**
      * @var KORD\I18n\RepositoryInterface 
      */
     protected $i18n;
     
+    /**
+     * @var KORD\Crypt\PasswordHash\PasswordHashInterface 
+     */
+    protected $password_hash;
+    
+    /**
+     * @var KORD\Helper\RandomInterface 
+     */
+    protected $random;
+
     /**
      * @var KORD\Helper\UTF8Interface 
      */
@@ -67,6 +97,16 @@ class Controller implements ControllerInterface
     }
     
     /**
+     * Config injection
+     * 
+     * @param \KORD\Config\RepositoryInterface $config
+     */
+    public function setConfig(\KORD\Config\RepositoryInterface $config)
+    {
+        $this->config = $config;
+    }
+    
+    /**
      * Cookie helper injection
      * 
      * @param \KORD\Helper\CookieInterface $cookie
@@ -77,13 +117,53 @@ class Controller implements ControllerInterface
     }
     
     /**
-     * Cookie helper injection
+     * Date helper injection
+     * 
+     * @param \KORD\Helper\DateInterface $date
+     */
+    public function setDate(\KORD\Helper\DateInterface $date)
+    {
+        $this->date = $date;
+    }
+    
+    /**
+     * Encrypt injection
+     * 
+     * @param \KORD\Crypt\EncryptInterface $encrypt
+     */
+    public function setEncrypt(\KORD\Crypt\EncryptInterface $encrypt)
+    {
+        $this->encrypt = $encrypt;
+    }
+    
+    /**
+     * Hash injection
+     * 
+     * @param \KORD\Crypt\HashInterface $hash
+     */
+    public function setHash(\KORD\Crypt\HashInterface $hash)
+    {
+        $this->hash = $hash;
+    }
+    
+    /**
+     * I18n helper injection
      * 
      * @param \KORD\I18n\RepositoryInterface $i18n
      */
     public function setI18n(\KORD\I18n\RepositoryInterface $i18n)
     {
         $this->i18n = $i18n;
+    }
+    
+    /**
+     * PasswordHash injection
+     * 
+     * @param \KORD\Crypt\PasswordHash\PasswordHashInterface $password_hash
+     */
+    public function setPasswordHash(\KORD\Crypt\PasswordHash\PasswordHashInterface $password_hash)
+    {
+        $this->password_hash = $password_hash;
     }
     
     /**
@@ -94,6 +174,16 @@ class Controller implements ControllerInterface
     public function setRequestFactory(RequestFactoryInterface $request_factory)
     {
         $this->request_factory = $request_factory;
+    }
+    
+    /**
+     * Random helper injection
+     * 
+     * @param \KORD\Helper\RandomInterface $random
+     */
+    public function setRandom(\KORD\Helper\RandomInterface $random)
+    {
+        $this->random = $random;
     }
     
     /**

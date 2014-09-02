@@ -8,10 +8,8 @@ namespace KORD\Crypt;
  * 
  * @copyright  (c) 2014 Andriy Strepetov
  */
-class Hash
+class Hash implements HashInterface
 {
-    const OUTPUT_STRING = false;
-    const OUTPUT_BINARY = true;
     
     /**
      * @var array  Supported hash algorithms 
@@ -19,11 +17,26 @@ class Hash
     protected static $supported = [];
 
     /**
+     * Creates a new mcrypt wrapper.
+     *
+     * @param   string  $algo   Hash algorithm
+     * @param   string  $key    HMAC key
+     * @param   string  $output_binary When set to true, outputs raw binary data. false outputs lowercase hexits.
+     */
+    public function __construct($algo = 'sha256', $key = null, $output_binary = false)
+    {
+        // Store the key, mode, and cipher
+        $this->algo = $algo;
+        $this->key = $key;
+        $this->output = $output_binary;
+    }
+    
+    /**
      * Get supported algorithms
      *
      * @return array
      */
-    public static function getSupportedAlgorithms()
+    public function getSupportedAlgorithms()
     {
         if (!empty(Hash::$supported)) {
             return Hash::$supported;
@@ -38,24 +51,9 @@ class Hash
      * @param  string $algorithm
      * @return bool
      */
-    public static function isAlgorithmSupported($algorithm)
+    public function isAlgorithmSupported($algorithm)
     {
         return in_array(strtolower($algorithm), Hash::getSupportedAlgorithms(), true);
-    }
-
-    /**
-     * Creates a new mcrypt wrapper.
-     *
-     * @param   string  $algo   Hash algorithm
-     * @param   string  $key    HMAC key
-     * @param   string  $output When set to true, outputs raw binary data. false outputs lowercase hexits.
-     */
-    public function __construct($algo = 'sha256', $key = null, $output = Hash::OUTPUT_STRING)
-    {
-        // Store the key, mode, and cipher
-        $this->algo = $algo;
-        $this->key = $key;
-        $this->output = $output;
     }
 
     /**

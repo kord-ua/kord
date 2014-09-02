@@ -7,6 +7,12 @@ defined('DOCROOT') or die('No direct script access.');
 # cookie salt
 $cookie_salt = 'thisisatestsalt';
 
+# encrypt key
+$encrypt_key = 'thisisatestencryptkey';
+
+# hmac hash key
+$hash_key = 'thisisatesthashkey';
+
 // -- Setup HELPERS  -----------------------------------------------------------
 /**
  * Arr
@@ -33,7 +39,12 @@ $app->params['KORD\Helper\Date'] = [
     'date_format_closure' => $app->newFactory('KORD\I18n\Date\Format'),
     'i18n' => $app->lazyGet('i18n')
 ];
-$app->set('cookie', $app->lazyNew('KORD\Helper\Cookie'));
+$app->set('date', $app->lazyNew('KORD\Helper\Date'));
+
+/**
+ * Random
+ */
+$app->set('random', $app->lazyNew('KORD\Helper\Random'));
 
 /**
  * UTF8
@@ -86,6 +97,28 @@ $app->params['KORD\Error\Debug'] = [
 ];
 $app->set('debug', $app->lazyNew('KORD\Error\Debug'));
 
+// -- Setup Crypt  -------------------------------------------------------------
+/**
+ * Hash
+ */
+$app->params['KORD\Crypt\Hash'] = [
+    'key' => $hash_key
+];
+$app->set('hash', $app->lazyNew('KORD\Crypt\Hash'));
+
+/**
+ * Encrypt
+ */
+$app->params['KORD\Crypt\Encrypt'] = [
+    'key' => $encrypt_key
+];
+$app->set('encrypt', $app->lazyNew('KORD\Crypt\Encrypt'));
+
+/**
+ * PasswordHash
+ */
+$app->set('password_hash', $app->lazyNew('KORD\Crypt\PasswordHash\Pbkdf2'));
+
 // -- Setup I18n  --------------------------------------------------------------
 /**
  * Repository
@@ -134,8 +167,14 @@ $app->setter['KORD\Mvc\Request\ClientAbstract']['setProfiler'] = $app->lazyGet('
  */
 $app->setter['KORD\Mvc\Controller'] = [
     'setArr' => $app->lazyGet('arr'),
+    'setConfig' => $app->lazyGet('config'),
     'setCookie' => $app->lazyGet('cookie'),
+    'setDate' => $app->lazyGet('date'),
+    'setEncrypt' => $app->lazyGet('encrypt'),
+    'setHash' => $app->lazyGet('hash'),
     'setI18n' => $app->lazyGet('i18n'),
+    'setPasswordHash' => $app->lazyGet('password_hash'),
+    'setRandom' => $app->lazyGet('random'),
     'setRequestFactory' => $app->lazyGet('request_factory'),
     'setUtf8' => $app->lazyGet('utf8'),
     'setViewFactory' => $app->lazyGet('view_factory'),

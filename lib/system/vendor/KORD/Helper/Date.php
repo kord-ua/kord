@@ -10,7 +10,7 @@ use KORD\I18n\RepositoryInterface;
  * @copyright  (c) 2007–2014 Kohana Team
  * @copyright  (c) 2014 Andriy Strepetov
  */
-class Date
+class Date implements DateInterface
 {
 
     // Second amounts for various time increments
