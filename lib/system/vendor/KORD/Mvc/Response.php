@@ -159,6 +159,16 @@ class Response implements ResponseInterface
     {
         return strlen($this->getBody());
     }
+    
+    /**
+     * Get supported HTTP status codes
+     * 
+     * @return array
+     */
+    public function getHttpStatusCodes()
+    {
+        return array_keys(Response::$messages);
+    }
 
     /**
      * Set HTTP status for this response

@@ -29,6 +29,13 @@ interface ResponseInterface
     public function contentLength();
     
     /**
+     * Get supported HTTP status codes
+     * 
+     * @return array
+     */
+    public function getHttpStatusCodes();
+    
+    /**
      * Set HTTP status for this response
      * 
      *      // Set the HTTP status to 404 Not Found

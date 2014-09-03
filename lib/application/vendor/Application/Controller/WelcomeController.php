@@ -7,7 +7,13 @@ class WelcomeController extends \KORD\Mvc\Controller
     
     public function indexAction()
     {
-        //throw new \Exception('test', 404);
+        //throw new \Exception('test', E_ERROR);
+        
+        // test session
+        $this->session->set('sessiontest', 'sessiontestvalue');
+        echo $this->session->get('sessiontest');
+        
+        //throw new \Exception('test', 301);
         $testarr = ['foo' => 'barbaz'];
         
         // test cookie

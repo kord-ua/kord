@@ -71,6 +71,9 @@ ini_set('unserialize_callback_func', 'spl_autoload_call');
  */
 mb_substitute_character('none');
 
+// Start an output buffer
+ob_start();
+
 /**
  * Init Aura DI and Aura Router
  */
@@ -90,6 +93,12 @@ require_once $filesystem->findFile('bootstrap', 'di');
 
 // Enable KORD exception handling, adds stack traces and error source.
 set_exception_handler([$app->get('exception'), 'handler']);
+
+// Enable KORD error handling, converts all PHP errors to exceptions.
+set_error_handler([$app->get('error'), 'handler']);
+
+// Enable the KORD shutdown handler, which catches E_FATAL errors.
+register_shutdown_function([$app->get('shutdown'), 'handler']);
 
 /**
  * Init modules

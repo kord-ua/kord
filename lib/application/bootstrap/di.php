@@ -81,12 +81,25 @@ $app->set('config_reader', $app->lazyNew('KORD\Config\File\Reader'));
  * Exception
  */
 $app->params['KORD\Error\ExceptionHandler'] = [
-    'response'      => $app->lazyNew('KORD\Mvc\Response'),
-    'view_factory'  => $app->lazyGet('view_factory'),
-    'debug'         => $app->lazyGet('debug'),
-    'config'        => (array) $app->get('config')->load('core')
+    'response_factory'  => $app->lazyGet('response_factory'),
+    'view_factory'      => $app->lazyGet('view_factory'),
+    'debug'             => $app->lazyGet('debug'),
+    'config'            => (array) $app->get('config')->load('core')
 ];
 $app->set('exception', $app->lazyNew('KORD\Error\ExceptionHandler'));
+
+/**
+ * Error
+ */
+$app->set('error', $app->lazyNew('KORD\Error\ErrorHandler'));
+
+/**
+ * Shutdown
+ */
+$app->params['KORD\Error\ShutdownHandler'] = [
+    'exception_handler' => $app->lazyGet('exception'),
+];
+$app->set('shutdown', $app->lazyNew('KORD\Error\ShutdownHandler'));
 
 /**
  * Debug
@@ -119,6 +132,13 @@ $app->set('encrypt', $app->lazyNew('KORD\Crypt\Encrypt'));
  */
 $app->set('password_hash', $app->lazyNew('KORD\Crypt\PasswordHash\Pbkdf2'));
 
+// -- Setup Session  -----------------------------------------------------------
+$app->params['KORD\Session\Native'] = [
+    'cookie' => $app->lazyGet('cookie'),
+    'encrypt' => $app->lazyGet('encrypt')
+];
+$app->set('session', $app->lazyNew('KORD\Session\Native'));
+
 // -- Setup I18n  --------------------------------------------------------------
 /**
  * Repository
@@ -149,7 +169,7 @@ $app->params['KORD\Mvc\RequestFactory'] = [
     'closure'   => $app->newFactory('KORD\Mvc\Request'),
     'clients' => [
         'internal' => $app->newFactory('KORD\Mvc\Request\Client\Internal'),
-        'curl' => $app->newFactory('KORD\Mvc\Request\Client\Curl')
+        //'curl' => $app->newFactory('KORD\Mvc\Request\Client\Curl')
     ]
 ];
 $app->set('request_factory', $app->lazyNew('KORD\Mvc\RequestFactory'));
@@ -176,6 +196,7 @@ $app->setter['KORD\Mvc\Controller'] = [
     'setPasswordHash' => $app->lazyGet('password_hash'),
     'setRandom' => $app->lazyGet('random'),
     'setRequestFactory' => $app->lazyGet('request_factory'),
+    'setSession' => $app->lazyGet('session'),
     'setUtf8' => $app->lazyGet('utf8'),
     'setViewFactory' => $app->lazyGet('view_factory'),
     'setViewGlobal' => $app->lazyGet('view_global')

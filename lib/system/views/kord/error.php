@@ -73,7 +73,7 @@ function koggle(elem)
 					<?php foreach ($step['args'] as $name => $arg): ?>
 						<tr>
 							<td><code><?php echo $name ?></code></td>
-							<td><pre><?php echo $debug->dump($arg) ?></pre></td>
+							<td><pre><?php echo $debug->dump($arg, 128, 4) ?></pre></td>
 						</tr>
 					<?php endforeach ?>
 					</table>

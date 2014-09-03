@@ -3,7 +3,7 @@
 namespace KORD\Error;
 
 use KORD\Error\DebugInterface;
-use KORD\Mvc\ResponseInterface;
+use KORD\Mvc\ResponseFactoryInterface;
 use KORD\Mvc\ViewFactoryInterface;
 
 /**
@@ -12,7 +12,7 @@ use KORD\Mvc\ViewFactoryInterface;
  * @copyright  (c) 2007–2014 Kohana Team
  * @copyright  (c) 2014 Andriy Strepetov
  */
-class ExceptionHandler
+class ExceptionHandler implements ExceptionHandlerInterface
 {
 
     /**
@@ -29,32 +29,32 @@ class ExceptionHandler
         E_RECOVERABLE_ERROR => 'Recoverable Error',
         E_DEPRECATED => 'Deprecated',
     ];
-    
+
     /**
      * @var  string  error rendering view
      */
     protected $error_view = 'kord/error';
-    
+
     /**
      * @var string  default response charset
      */
     protected $charset = 'utf-8';
-    
+
     /**
      * @var string  default response content type
      */
     protected $content_type = 'text/html';
-    
+
     /**
      * @var \KORD\Error\DebugInterface 
      */
     protected $debug;
 
     /**
-     * @var \KORD\Mvc\ResponseInterface 
+     * @var \KORD\Mvc\ResponseFactoryInterface 
      */
-    protected $response;
-    
+    protected $response_factory;
+
     /**
      * @var \KORD\Mvc\ViewFactoryInterface 
      */
@@ -63,24 +63,24 @@ class ExceptionHandler
     /**
      * Construct new exception handler
      * 
-     * @param \KORD\Mvc\ResponseInterface $response
+     * @param \KORD\Mvc\ResponseFactoryInterface $response
      * @param \KORD\Mvc\ViewFactoryInterface $view_factory
      * @param type $error_view
      */
-    public function __construct(ResponseInterface $response, ViewFactoryInterface $view_factory, DebugInterface $debug, array $config = [])
+    public function __construct(ResponseFactoryInterface $response_factory, ViewFactoryInterface $view_factory, DebugInterface $debug, array $config = [])
     {
-        $this->response = $response;
+        $this->response_factory = $response_factory;
         $this->view_factory = $view_factory;
         $this->debug = $debug;
-        
+
         if (isset($config['error_view'])) {
             $this->error_view = $config['error_view'];
         }
-        
+
         if (isset($config['charset'])) {
             $this->charset = $config['charset'];
         }
-        
+
         if (isset($config['content_type'])) {
             $this->content_type = $config['content_type'];
         }
@@ -222,17 +222,42 @@ class ExceptionHandler
                     ->set('charset', $this->charset);
 
             // Prepare the response object.
-            $response = $this->response;
+            $response = $this->response_factory->newInstance();
+
+            $status_codes = $response->getHttpStatusCodes();
 
             // Set the response status
-            $response->setStatus($e->getCode() ? $e->getCode() : 500);
+            if ($code AND in_array($code, $status_codes)) {
+                $response->setStatus($code);
+            } else {
+                $response->setStatus(500);
+            }
 
             // Set the response headers
             $response->setHeader('Content-Type', $this->content_type . '; charset=' . $this->charset);
+            $response->setHeader('Cache-Control', 'no-cache');
+
+            // HTTP redirect
+            if ($code >= 300 AND $code < 400) {
+                if ($code == 305 AND strpos($message, '://') === false) {
+                    throw new \Exception('An absolute URI to the proxy server must be specified');
+                }
+                $response->setHeader('Location', $message);
+            }
+            
+            // HTTP 401 Unauthorized
+            if ($code == 401) {
+                $response->setHeader('www-authenticate', $message);
+            }
+            
+            // HTTP 405 Method Not Allowed
+            if ($code == 405) {
+                $response->setHeader('allow', $message);
+            }
 
             // Set the response body
             $response->setBody($view->render());
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             /**
              * Things are going badly for us, Lets try to keep things under control by
              * generating a simpler response object.

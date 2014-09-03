@@ -74,6 +74,11 @@ class Controller implements ControllerInterface
      * @var KORD\Helper\RandomInterface 
      */
     protected $random;
+    
+    /**
+     * @var KORD\Session\SessionInterface 
+     */
+    protected $session;
 
     /**
      * @var KORD\Helper\UTF8Interface 
@@ -184,6 +189,16 @@ class Controller implements ControllerInterface
     public function setRandom(\KORD\Helper\RandomInterface $random)
     {
         $this->random = $random;
+    }
+    
+    /**
+     * Session injection
+     * 
+     * @param \KORD\Session\SessionInterface $session
+     */
+    public function setSession(\KORD\Session\SessionInterface $session)
+    {
+        $this->session = $session;
     }
     
     /**
