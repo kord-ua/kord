@@ -4,6 +4,7 @@ namespace KORD\Session;
 
 use KORD\Crypt\EncryptInterface;
 use KORD\Helper\CookieInterface;
+use KORD\Log\LoggerInterface;
 
 /**
  * Base session class.
@@ -18,11 +19,16 @@ abstract class SessionAbstract implements SessionInterface
      * @var KORD\Crypt\EncryptInterface 
      */
     protected $encrypt;
-    
+
     /**
      * @var KORD\Helper\CookieInterface 
      */
     protected $cookie;
+
+    /**
+     * @var KORD\Log\LoggerInterface 
+     */
+    protected $logger;
 
     /**
      * @var  string  cookie name
@@ -69,13 +75,16 @@ abstract class SessionAbstract implements SessionInterface
      * @return  void
      * @uses    Session::read
      */
-    public function __construct(CookieInterface $cookie, EncryptInterface $encrypt = null, array $config = null, $id = null)
+    public function __construct(CookieInterface $cookie, EncryptInterface $encrypt = null, LoggerInterface $logger = null, array $config = null, $id = null)
     {
         $this->cookie = $cookie;
-        
+
         // Enable or disable encryption of data
         $this->encrypt = $encrypt;
-            
+
+        // Enable or disable logging exceptions
+        $this->logger = $logger;
+
         if (isset($config['cookie_name'])) {
             // Cookie name to store the session id in
             $this->cookie_name = (string) $config['cookie_name'];
@@ -103,7 +112,7 @@ abstract class SessionAbstract implements SessionInterface
 
         // Load the session
         $this->read($id);
-        
+
         // Write the session at shutdown
         register_shutdown_function([$this, 'write']);
     }
@@ -280,7 +289,7 @@ abstract class SessionAbstract implements SessionInterface
                     // Decode the data
                     $data = $this->decode($data);
                 }
-                
+
                 // Unserialize the data
                 $data = $this->unserialize($data);
             } else {
@@ -386,7 +395,14 @@ abstract class SessionAbstract implements SessionInterface
             return $this->writeSession();
         } catch (\Exception $e) {
             // Log & ignore all errors when a write fails
-            //Core::$log->log(Level::ERROR, Exception::text($e));
+            if (is_object($this->logger)) {
+                $file = $e->getFile();
+                if (defined('DOCROOT') AND strpos($file, DOCROOT) === 0) {
+                    $file = 'DOCROOT' . DIRECTORY_SEPARATOR . substr($file, strlen(DOCROOT));
+                }
+                $message = sprintf('%s [ %s ]: %s ~ %s [ %d ]', get_class($e), $e->getCode(), strip_tags($e->getMessage()), $file, $e->getLine());
+                $this->logger->log(LOG_ERR, $message);
+            }
 
             return false;
         }

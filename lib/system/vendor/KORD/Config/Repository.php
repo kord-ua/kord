@@ -73,7 +73,7 @@ class Repository implements RepositoryInterface
     public function attach(SourceInterface $source, $first = true)
     {
         if ($first === true) {
-            // Place the log reader at the top of the stack
+            // Place the config reader at the top of the stack
             array_unshift($this->sources, $source);
         } else {
             // Place the reader at the bottom of the stack

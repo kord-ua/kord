@@ -3,6 +3,7 @@
 namespace KORD\Error;
 
 use KORD\Error\DebugInterface;
+use KORD\Log\LoggerInterface;
 use KORD\Mvc\ResponseFactoryInterface;
 use KORD\Mvc\ViewFactoryInterface;
 
@@ -51,6 +52,11 @@ class ExceptionHandler implements ExceptionHandlerInterface
     protected $debug;
 
     /**
+     * @var \KORD\Log\LoggerInterface 
+     */
+    protected $logger;
+
+    /**
      * @var \KORD\Mvc\ResponseFactoryInterface 
      */
     protected $response_factory;
@@ -67,11 +73,12 @@ class ExceptionHandler implements ExceptionHandlerInterface
      * @param \KORD\Mvc\ViewFactoryInterface $view_factory
      * @param type $error_view
      */
-    public function __construct(ResponseFactoryInterface $response_factory, ViewFactoryInterface $view_factory, DebugInterface $debug, array $config = [])
+    public function __construct(ResponseFactoryInterface $response_factory, ViewFactoryInterface $view_factory, DebugInterface $debug, LoggerInterface $logger, array $config = [])
     {
         $this->response_factory = $response_factory;
         $this->view_factory = $view_factory;
         $this->debug = $debug;
+        $this->logger = $logger;
 
         if (isset($config['error_view'])) {
             $this->error_view = $config['error_view'];
@@ -127,7 +134,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
     {
         try {
             // Log the exception
-            //Exception::log($e);
+            $this->log($e);
             // Generate the response
             $response = $this->getResponse($e);
 
@@ -146,6 +153,50 @@ class ExceptionHandler implements ExceptionHandlerInterface
             echo $this->text($e);
 
             exit(1);
+        }
+    }
+
+    /**
+     * Logs an exception.
+     *
+     * @param   \Exception  $e
+     * @param   string      $level
+     * @return  void
+     */
+    public function log(\Exception $e, $format = "body in file:line", $level = LOG_EMERG)
+    {
+        if (is_object($this->logger)) {
+
+            // Add this exception to the log
+            $trace = $e->getTrace();
+
+            if (defined('DOCROOT') AND isset($trace[0]['file']) AND strpos($trace[0]['file'], DOCROOT) === 0) {
+                $trace[0]['file'] = 'DOCROOT' . DIRECTORY_SEPARATOR . substr($trace[0]['file'], strlen(DOCROOT));
+            }
+
+            $message = [
+                'body' => $this->text($e),
+                'file' => isset($trace[0]['file']) ? $trace[0]['file'] : null,
+                'line' => isset($trace[0]['line']) ? $trace[0]['line'] : null,
+                'class' => isset($trace[0]['class']) ? $trace[0]['class'] : null,
+                'function' => isset($trace[0]['function']) ? $trace[0]['function'] : null
+            ];
+
+            $error = strtr($format, array_filter($message, 'is_scalar'));
+
+            $this->logger->log($level, $error);
+
+            // Add the trace to the log
+            $message['body'] = $e->getTraceAsString();
+
+            $strace = PHP_EOL . strtr($format, array_filter($message, 'is_scalar'));
+
+            $this->logger->log(LOG_DEBUG, $strace);
+
+            // Make sure the logs are written
+            if (method_exists($this->logger, 'write')) {
+                $this->logger->write();
+            }
         }
     }
 
@@ -244,12 +295,12 @@ class ExceptionHandler implements ExceptionHandlerInterface
                 }
                 $response->setHeader('Location', $message);
             }
-            
+
             // HTTP 401 Unauthorized
             if ($code == 401) {
                 $response->setHeader('www-authenticate', $message);
             }
-            
+
             // HTTP 405 Method Not Allowed
             if ($code == 405) {
                 $response->setHeader('allow', $message);

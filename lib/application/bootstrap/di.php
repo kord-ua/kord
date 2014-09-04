@@ -84,6 +84,7 @@ $app->params['KORD\Error\ExceptionHandler'] = [
     'response_factory'  => $app->lazyGet('response_factory'),
     'view_factory'      => $app->lazyGet('view_factory'),
     'debug'             => $app->lazyGet('debug'),
+    'logger'            => $app->lazyGet('logger'),
     'config'            => (array) $app->get('config')->load('core')
 ];
 $app->set('exception', $app->lazyNew('KORD\Error\ExceptionHandler'));
@@ -110,6 +111,25 @@ $app->params['KORD\Error\Debug'] = [
 ];
 $app->set('debug', $app->lazyNew('KORD\Error\Debug'));
 
+// -- Setup Logger  ------------------------------------------------------------
+/**
+ * Logger
+ */
+$app->params['KORD\Log\Logger'] = [
+    'writers' => [
+        $app->lazyGet('log_writer')
+    ]
+];
+$app->set('logger', $app->lazyNew('KORD\Log\Logger'));
+
+/**
+ * Writer
+ */
+$app->params['KORD\Log\Writer\File'] = [
+    'directory' => DOCROOT . 'lib/application/logs'
+];
+$app->set('log_writer', $app->lazyNew('KORD\Log\Writer\File'));
+
 // -- Setup Crypt  -------------------------------------------------------------
 /**
  * Hash
@@ -135,7 +155,8 @@ $app->set('password_hash', $app->lazyNew('KORD\Crypt\PasswordHash\Pbkdf2'));
 // -- Setup Session  -----------------------------------------------------------
 $app->params['KORD\Session\Native'] = [
     'cookie' => $app->lazyGet('cookie'),
-    'encrypt' => $app->lazyGet('encrypt')
+    'encrypt' => $app->lazyGet('encrypt'),
+    'logger' => $app->lazyGet('logger'),
 ];
 $app->set('session', $app->lazyNew('KORD\Session\Native'));
 
@@ -193,6 +214,7 @@ $app->setter['KORD\Mvc\Controller'] = [
     'setEncrypt' => $app->lazyGet('encrypt'),
     'setHash' => $app->lazyGet('hash'),
     'setI18n' => $app->lazyGet('i18n'),
+    'setLogger' => $app->lazyGet('logger'),
     'setPasswordHash' => $app->lazyGet('password_hash'),
     'setRandom' => $app->lazyGet('random'),
     'setRequestFactory' => $app->lazyGet('request_factory'),

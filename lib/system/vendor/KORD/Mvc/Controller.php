@@ -66,6 +66,11 @@ class Controller implements ControllerInterface
     protected $i18n;
     
     /**
+     * @var KORD\Log\LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * @var KORD\Crypt\PasswordHash\PasswordHashInterface 
      */
     protected $password_hash;
@@ -159,6 +164,16 @@ class Controller implements ControllerInterface
     public function setI18n(\KORD\I18n\RepositoryInterface $i18n)
     {
         $this->i18n = $i18n;
+    }
+    
+    /**
+     * Logger injection
+     * 
+     * @param \KORD\Log\LoggerInterface $logger
+     */
+    public function setLogger(\KORD\Log\LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
     
     /**
